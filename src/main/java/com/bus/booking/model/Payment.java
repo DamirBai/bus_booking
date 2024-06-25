@@ -12,7 +12,7 @@ public class Payment {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    private Double amount;
+    private Double price;
     private String paymentDate;
     private String status;
 
@@ -23,8 +23,8 @@ public class Payment {
     public Ticket getTicket() { return ticket; }
     public void setTicket(Ticket ticket) { this.ticket = ticket; }
 
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
+    public Double getAmount() { return price; }
+    public void setAmount(Double price) { this.price = price; }
 
     public String getPaymentDate() { return paymentDate; }
     public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
