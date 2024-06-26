@@ -1,6 +1,6 @@
 package com.bus.booking.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -17,15 +17,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Notification> notifications;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Notification notification;
 
     // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getUsername() { return fullName; }
-    public void setUsername(String fullName) { this.fullName = fullName; }
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
@@ -39,7 +39,6 @@ public class User {
     public Set<Ticket> getTickets() { return tickets; }
     public void setTickets(Set<Ticket> tickets) { this.tickets = tickets; }
 
-    public Set<Notification> getNotifications() { return notifications; }
-    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
+    public Notification getNotification() { return notification; }
+    public void setNotification(Notification notification) { this.notification = notification; }
 }
-

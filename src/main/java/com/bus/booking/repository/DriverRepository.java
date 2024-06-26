@@ -1,8 +1,9 @@
 package com.bus.booking.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.bus.booking.model.Driver;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface DriverRepository extends JpaRepository<Driver, Long> {}
-
+@Repository
+public interface DriverRepository extends JpaRepository<Driver, Long> {
+}
