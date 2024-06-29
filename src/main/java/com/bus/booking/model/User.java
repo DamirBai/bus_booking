@@ -14,6 +14,11 @@ public class User {
     private String password;
     private boolean isAdmin;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private Set<String> roles;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;
 
@@ -41,4 +46,7 @@ public class User {
 
     public Notification getNotification() { return notification; }
     public void setNotification(Notification notification) { this.notification = notification; }
+
+    public Set<String> getRoles() { return roles; }
+    public void setRoles(Set<String> roles) { this.roles = roles; }
 }

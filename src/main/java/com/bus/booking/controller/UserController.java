@@ -4,13 +4,13 @@ import com.bus.booking.model.User;
 import com.bus.booking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -51,6 +51,7 @@ public class UserController {
                     user.setPassword(userDetails.getPassword());
                     user.setEmail(userDetails.getEmail());
                     user.setIsAdmin(userDetails.getIsAdmin());
+                    user.setRoles(userDetails.getRoles());
                     user.setTickets(userDetails.getTickets());
                     user.setNotification(userDetails.getNotification());
                     return ResponseEntity.ok(userService.save(user));
@@ -69,9 +70,33 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model) {
-        //вот тут доделать
-        return "profile";
+    public String viewProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> user = userService.findByEmail(email);
+        if (user.isPresent()) {
+            model.addAttribute("user", user.get());
+            return "profile"; // This corresponds to profile.html in templates directory
+        } else {
+            return "error"; // Or another appropriate error page
+        }
+    }
+
+    @PostMapping("/profile")
+    public String updateProfile(@ModelAttribute User user, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<User> existingUser = userService.findByEmail(email);
+        if (existingUser.isPresent()) {
+            User updatedUser = existingUser.get();
+            updatedUser.setFullName(user.getFullName());
+            updatedUser.setPassword(user.getPassword());
+            updatedUser.setEmail(user.getEmail());
+            userService.save(updatedUser);
+            model.addAttribute("user", updatedUser);
+            return "profile"; // Redirect to profile page after update
+        } else {
+            return "error"; // Or another appropriate error page
+        }
     }
 }
-
