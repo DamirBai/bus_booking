@@ -1,7 +1,9 @@
 package com.bus.booking.controller;
 
 import com.bus.booking.model.User;
+import com.bus.booking.model.UserInfo;
 import com.bus.booking.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,14 +16,19 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
     @GetMapping
     public List<User> getAllUsers() {
         return userService.findAll();
+    }
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody UserInfo userInfo) {
+        var user = userService.updateUser(userInfo, userService.getAuthenticatedUser());
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/list")
@@ -37,27 +44,20 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/authenticated")
+    public ResponseEntity<?> getAuthenticatedUserId() {
+        return ResponseEntity.ok(userService.getAuthenticatedUser().getId());
+    }
+    @RequestMapping(value = "/confirmemail", method = {RequestMethod.GET, RequestMethod.POST})
+    private ResponseEntity<?> confirmEmail(@RequestParam("token") String token) {
+        return userService.confirmEmail(token);
+    }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
         return userService.save(user);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userService.findById(id)
-                .map(user -> {
-                    user.setFullName(userDetails.getFullName());
-                    user.setPassword(userDetails.getPassword());
-                    user.setEmail(userDetails.getEmail());
-                    user.setIsAdmin(userDetails.getIsAdmin());
-                    user.setRoles(userDetails.getRoles());
-                    user.setTickets(userDetails.getTickets());
-                    user.setNotification(userDetails.getNotification());
-                    return ResponseEntity.ok(userService.save(user));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

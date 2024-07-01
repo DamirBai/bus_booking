@@ -1,18 +1,47 @@
 package com.bus.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.Set;
 
 @Entity
-public class User {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "Users")
+public class User implements UserDetails {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
+
+
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @JsonIgnore
+    @Column(name = "password", nullable = false)
     private String password;
+    
     private boolean isAdmin;
+
+    @MapsId
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private UserInfo userInfo;
+
+
+    @Column(name = "enabled")
+    private boolean enabled;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -25,28 +54,39 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Notification notification;
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-    public boolean getIsAdmin() { return isAdmin; }
-    public void setIsAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-    public Set<Ticket> getTickets() { return tickets; }
-    public void setTickets(Set<Ticket> tickets) { this.tickets = tickets; }
-
-    public Notification getNotification() { return notification; }
-    public void setNotification(Notification notification) { this.notification = notification; }
-
-    public Set<String> getRoles() { return roles; }
-    public void setRoles(Set<String> roles) { this.roles = roles; }
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }
