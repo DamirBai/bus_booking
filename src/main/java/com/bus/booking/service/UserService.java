@@ -5,7 +5,6 @@ import com.bus.booking.model.UserInfo;
 import com.bus.booking.repository.ConfirmationTokenRepository;
 import com.bus.booking.repository.UserRepository;
 import org.hibernate.NonUniqueObjectException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-
     private final UserRepository userRepository;
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
@@ -29,7 +27,6 @@ public class UserService {
         this.confirmationTokenRepository = confirmationTokenRepository;
         this.confirmationTokenService = confirmationTokenService;
     }
-
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findUserByEmail(username)
@@ -72,22 +69,5 @@ public class UserService {
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email).orElseThrow(()
                 -> new NoSuchElementException(String.format("User with email '%d' not found", email)));
-    }
-
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
-    }
-
-
-    public User save(User user) {
-        return userRepository.save(user);
-    }
-
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
     }
 }
