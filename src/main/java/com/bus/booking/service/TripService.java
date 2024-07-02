@@ -5,6 +5,7 @@ import com.bus.booking.repository.TripRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,11 @@ public class TripService {
 
     public void deleteById(Long id) {
         tripRepository.deleteById(id);
+    }
+
+    public List<Trip> searchTrips(String startLocation, String endLocation, LocalDateTime departureTimeStart, LocalDateTime departureTimeEnd) {
+        return tripRepository.findByRoute_StartLocationAndRoute_EndLocationAndDepartureTimeBetween(
+                startLocation, endLocation, departureTimeStart, departureTimeEnd);
     }
 }
 

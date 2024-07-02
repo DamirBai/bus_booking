@@ -29,4 +29,8 @@ public class TicketService {
     public void deleteById(Long id) {
         ticketRepository.deleteById(id);
     }
+
+    public Optional<Ticket> findByTripAndSeatNumber(Long tripId, int seatNumber) {
+        return ticketRepository.findByTripIdAndSeatNumber(tripId, seatNumber);
+    }
 }

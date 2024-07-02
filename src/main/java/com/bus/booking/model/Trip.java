@@ -1,11 +1,13 @@
 package com.bus.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -31,12 +33,12 @@ public class Trip {
     private Driver driver;
 
     @Column
-    private String departureTime;
+    private LocalDateTime departureTime;
 
     @Column
-    private String arrivalTime;
+    private LocalDateTime arrivalTime;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;
 }
-

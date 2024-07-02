@@ -25,7 +25,7 @@ public class Ticket {
     private User user;
 
     @Column
-    private String seatNumber;
+    private int seatNumber;
 
     @Column
     private String status;

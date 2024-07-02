@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -56,5 +57,12 @@ public class TripController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-}
 
+    @GetMapping("/search")
+    public List<Trip> searchTrips(@RequestParam String startLocation,
+                                  @RequestParam String endLocation,
+                                  @RequestParam LocalDateTime departureTimeStart,
+                                  @RequestParam LocalDateTime departureTimeEnd) {
+        return tripService.searchTrips(startLocation, endLocation, departureTimeStart, departureTimeEnd);
+    }
+}

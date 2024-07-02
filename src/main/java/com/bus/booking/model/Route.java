@@ -1,5 +1,6 @@
 package com.bus.booking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Route {
     @Column
     private String duration;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Trip> trips;
 }

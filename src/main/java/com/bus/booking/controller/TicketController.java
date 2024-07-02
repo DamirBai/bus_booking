@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/tickets")
@@ -30,29 +31,6 @@ public class TicketController {
         return ticketService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("{trip_id}/bookTicket/{ticket_id}")
-    public ResponseEntity<String> bookTicket(@PathVariable Long trip_id, @PathVariable Long ticket_id) {
-        Trip trip = tripService.findById(trip_id).orElse(null);
-        Ticket ticket = ticketService.findById(ticket_id).orElse(null);
-
-        if (trip == null || ticket == null) {
-            return ResponseEntity.badRequest().body("Trip or Ticket does not exist!");
-        }
-        if (ticket.getTrip() != null) {
-            return ResponseEntity.badRequest().body("Ticket is already booked!");
-        }
-
-        ticket.setTrip(trip);
-        ticketService.save(ticket);
-
-        if (!trip.getTickets().contains(ticket)) {
-            trip.getTickets().add(ticket);
-            tripService.save(trip);
-        }
-
-        return ResponseEntity.ok("Ticket booked successfully!");
     }
 
     @PostMapping
@@ -82,5 +60,41 @@ public class TicketController {
                     return ResponseEntity.ok().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/book")
+    public ResponseEntity<String> bookTicket(@RequestParam Long tripId, @RequestParam int seatNumber) {
+        Optional<Trip> tripOptional = tripService.findById(tripId);
+
+        if (tripOptional.isPresent()) {
+            Trip trip = tripOptional.get();
+            int busCapacity = trip.getBus().getCapacity();
+            if (seatNumber > 0 && seatNumber <= busCapacity) {
+                Optional<Ticket> ticketOptional = ticketService.findByTripAndSeatNumber(tripId, seatNumber);
+                if (ticketOptional.isPresent()) {
+                    Ticket ticket = ticketOptional.get();
+                    if ("free".equals(ticket.getStatus())) {
+                        ticket.setStatus("busy");
+                        ticket.setTrip(trip);
+                        ticketService.save(ticket);
+
+                        if (!trip.getTickets().contains(ticket)) {
+                            trip.getTickets().add(ticket);
+                            tripService.save(trip);
+                        }
+
+                        return ResponseEntity.ok("Ticket booked successfully!");
+                    } else {
+                        return ResponseEntity.status(400).body("Seat is already booked");
+                    }
+                } else {
+                    return ResponseEntity.status(404).body("Ticket not found");
+                }
+            } else {
+                return ResponseEntity.status(400).body("Invalid seat number");
+            }
+        } else {
+            return ResponseEntity.status(404).body("Trip not found");
+        }
     }
 }
