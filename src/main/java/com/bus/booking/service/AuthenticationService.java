@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +30,8 @@ public class AuthenticationService{
 
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         var user = User.builder()
-                .userInfo(UserInfo.builder().firstName(request.getFirstName()).lastName(request.getLastName()).build())
-                .email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
+                .userInfo(UserInfo.builder().firstName(request.getFirst_name()).lastName(request.getLast_name()).build())
+                .email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).isAdmin(isAdminn(request.getEmail()))
                 .build();
         userService.saveUser(user);
         return JwtAuthenticationResponse.builder()
@@ -58,5 +59,8 @@ public class AuthenticationService{
                 .accessToken(jwtService.generateAccessToken(user))
                 .refreshToken(jwtService.generateRefreshToken(user).getRefreshToken())
                 .build();
+    }
+    public boolean isAdminn(String email){
+        return Objects.equals(email, "abiev.arystanbek@gmail.com");
     }
 }

@@ -23,4 +23,5 @@ public class UserInfo {
     private String firstName;
     private String lastName;
 
+
 }

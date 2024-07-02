@@ -31,7 +31,8 @@ public class User implements UserDetails {
     @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
-    
+
+    @Column(name = "isAdmin", nullable = false)
     private boolean isAdmin;
 
     @MapsId
