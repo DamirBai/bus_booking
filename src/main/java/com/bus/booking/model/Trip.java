@@ -1,52 +1,42 @@
 package com.bus.booking.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "route_id")
+    @JoinColumn(name = "route_id", referencedColumnName = "id")
     private Route route;
 
     @ManyToOne
-    @JoinColumn(name = "bus_id")
+    @JoinColumn(name = "bus_id", referencedColumnName = "id")
     private Bus bus;
 
     @ManyToOne
-    @JoinColumn(name = "driver_id")
+    @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
+    @Column
     private String departureTime;
+
+    @Column
     private String arrivalTime;
 
     @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Route getRoute() { return route; }
-    public void setRoute(Route route) { this.route = route; }
-
-    public Bus getBus() { return bus; }
-    public void setBus(Bus bus) { this.bus = bus; }
-
-    public Driver getDriver() { return driver; }
-    public void setDriver(Driver driver) { this.driver = driver; }
-
-    public String getDepartureTime() { return departureTime; }
-    public void setDepartureTime(String departureTime) { this.departureTime = departureTime; }
-
-    public String getArrivalTime() { return arrivalTime; }
-    public void setArrivalTime(String arrivalTime) { this.arrivalTime = arrivalTime; }
-
-    public Set<Ticket> getTickets() { return tickets; }
-    public void setTickets(Set<Ticket> tickets) { this.tickets = tickets; }
 }
 
