@@ -62,6 +62,18 @@ public class TicketController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{ticketId}/trips/{tripId}")
+    public Ticket addTripToTicket(
+            @PathVariable Long ticketId,
+            @PathVariable Long tripId
+    ) {
+        Ticket ticket = ticketService.findById(ticketId).orElse(null);
+        Trip trip = tripService.findById(tripId).orElse(null);
+
+        if (ticket != null && trip != null) ticket.setTrip(trip);
+        return ticketService.save(ticket);
+    }
+
     @PutMapping("/book")
     public ResponseEntity<String> bookTicket(@RequestParam Long tripId, @RequestParam int seatNumber) {
         Optional<Trip> tripOptional = tripService.findById(tripId);
