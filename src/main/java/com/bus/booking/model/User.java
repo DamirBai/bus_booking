@@ -1,45 +1,84 @@
 package com.bus.booking.model;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.Set;
 
 @Entity
-public class User {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "Users")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
-    private String fullName;
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    @JsonIgnore
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "isAdmin", nullable = false)
     private boolean isAdmin;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_info_id")
+    private UserInfo userInfo;
+
+    @Column(name = "enabled")
+    private boolean enabled;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private Set<String> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Notification> notifications;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Notification notification;
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
 
-    public String getUsername() { return fullName; }
-    public void setUsername(String fullName) { this.fullName = fullName; }
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-    public boolean getIsAdmin() { return isAdmin; }
-    public void setIsAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
-
-    public Set<Ticket> getTickets() { return tickets; }
-    public void setTickets(Set<Ticket> tickets) { this.tickets = tickets; }
-
-    public Set<Notification> getNotifications() { return notifications; }
-    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }
-
