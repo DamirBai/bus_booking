@@ -2,7 +2,6 @@ package com.bus.booking.service;
 
 
 import com.bus.booking.model.User;
-import com.bus.booking.model.UserInfo;
 import com.bus.booking.model.request.SignInRequest;
 import com.bus.booking.model.request.SignUpRequest;
 import com.bus.booking.model.response.JwtAuthenticationResponse;
@@ -30,7 +29,8 @@ public class AuthenticationService{
 
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         var user = User.builder()
-                .userInfo(UserInfo.builder().firstName(request.getFirst_name()).lastName(request.getLast_name()).build())
+                .firstName(request.getFirst_name())
+                .lastName(request.getLast_name())
                 .email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).isAdmin(isAdminn(request.getEmail()))
                 .build();
         userService.saveUser(user);

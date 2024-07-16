@@ -1,9 +1,10 @@
 package com.bus.booking.service;
 
 import com.bus.booking.model.User;
-import com.bus.booking.model.UserInfo;
+import com.bus.booking.model.request.UserNameRequest;
 import com.bus.booking.repository.ConfirmationTokenRepository;
 import com.bus.booking.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.NonUniqueObjectException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,22 +12,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final ConfirmationTokenService confirmationTokenService;
 
-    public UserService(UserRepository userRepository, ConfirmationTokenRepository confirmationTokenRepository, ConfirmationTokenService confirmationTokenService) {
-        this.userRepository = userRepository;
-        this.confirmationTokenRepository = confirmationTokenRepository;
-        this.confirmationTokenService = confirmationTokenService;
-    }
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findUserByEmail(username)
@@ -37,9 +32,9 @@ public class UserService {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    public User updateUser(UserInfo userInfo, User user) {
-        userInfo.setId(user.getId());
-        user.setUserInfo(userInfo);
+    public User updateUser(UserNameRequest userInfo, User user) {
+        user.setFirstName(userInfo.getFirstName());
+        user.setLastName(userInfo.getLastName());
         userRepository.save(user);
         return user;
     }

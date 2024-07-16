@@ -19,35 +19,28 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "Users")
 public class User implements UserDetails {
+
     @Id
     @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+
     @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
+    private String firstName;
+    private String lastName;
+
     @Column(name = "isAdmin", nullable = false)
     private boolean isAdmin;
-
-    @MapsId
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private UserInfo userInfo;
-
 
     @Column(name = "enabled")
     private boolean enabled;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<String> roles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Ticket> tickets;

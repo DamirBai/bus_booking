@@ -33,6 +33,7 @@ public class Trip {
     private Driver driver;
 
     @Column
+
     private LocalDateTime departureTime;
 
     @Column
